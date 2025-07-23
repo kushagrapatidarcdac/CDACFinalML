@@ -1,7 +1,10 @@
-pandas>=1.5.0
-numpy>=1.23.0
-scikit-learn>=1.1.0
-joblib>=1.2.0
+pandas
+numpy
+scikit-learn
 uvicorn
 fastapi
 pydantic
+pydantic_settings
+motor
+python-dotenv
+pickle

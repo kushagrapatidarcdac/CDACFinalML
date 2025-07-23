@@ -1,18 +1,20 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import List, Optional
 
-class PredictData(BaseModel):
-    segment: str
-    game: str
-    totalrounds: int
-    kd: float
+class Dataset(BaseModel):
+    id: str
+    features: List[float]
+    label: Optional[int]
 
-class Incremental(PredictData):
-    rating: float
+class MLInput(BaseModel):
+    data: List[float]
 
-class Recommend(BaseModel):
-    data: Dict
-    player_id: str
-    player_segement: str
-    game: str
-    n: int =5
+class MLOutput(BaseModel):
+    prediction: int
+
+class RecommendRequest(BaseModel):
+    user_id: str
+    top_k: int = 10
+
+class RecommendResponse(BaseModel):
+    recommendations: List[str]
