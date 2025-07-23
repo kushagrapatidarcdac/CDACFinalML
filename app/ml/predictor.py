@@ -7,18 +7,18 @@ class Predictor:
         self.game = game
         self.features = features
         self.pipeline = None
-        self.model_bytes = None
+        self.model_binary = None
         self.prediction = None
     
     def get_model(self):
         # Use Segment and Game and model_type = 'prediction' to fetch the model from the database
         # Set self.model_bytes to the fetched model
-        self.model_bytes=read_mlmodel(segment=self.segment, game=self.game, model_type="prediction")
+        self.model_binary=read_mlmodel(segment=self.segment, game=self.game, model_type="prediction")
         
     
     def load_model(self):
         self.get_model()
-        self.pipeline = pickle.loads(self.model_bytes)
+        self.pipeline = pickle.loads(self.model_binary)
 
     def make_predictions(self):
         self.load_model()

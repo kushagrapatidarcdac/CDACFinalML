@@ -1,5 +1,5 @@
 import pickle
-from MLModelClass import Model
+from app.models import Model
 from app.crud import update_mlmodel, read_incrementals, upsert_incremental, reset_incremental
 
 
@@ -42,7 +42,6 @@ class IncrementalPredictionTrainer:
             self.new_data={k: self.current_data[k] + self.features[k] for k in self.features.keys()}
         else:
             self.new_data=self.extract_features()
-  
         
     # Decide whether to train the model or update the incremental collection
     def train_or_update(self):
@@ -55,7 +54,7 @@ class IncrementalPredictionTrainer:
                     )
         else:
             
-            self.model = Model(self.new_data)
+            self.model = Model(self.segment, self.game, 'prediction',self.new_data)
             self.model.fetch_model()  # Fetch existing model
             self.model.predData()
             self.model.train_inc()

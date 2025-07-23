@@ -69,9 +69,7 @@ def update_dataset(segment, game, new_data):
 
 def delete_dataset(segment, game):
     query = {"segment": segment, "game": game}
-    result = datasets_collection.delete_one(query)
-    return result.deleted_count
-
+    datasets_collection.delete_one(query)
 
 # ==== INCREMENTALDATASETS CRUD ====
 
@@ -143,7 +141,7 @@ def create_mlmodel(segment, game, model_type, model_bytes):
         "model_type": model_type,
         "model_binary": Binary(model_bytes),
     }
-    return mlmodels_collection.insert_one(doc).inserted_id
+    mlmodels_collection.insert_one(doc)
 
 
 def read_mlmodel(segment=None, game=None, model_type=None):
@@ -155,7 +153,7 @@ def read_mlmodel(segment=None, game=None, model_type=None):
     if model_type:
         query["model_type"] = model_type
     
-    return bytes(mlmodels_collection.find_one(query)['model_binary'])
+    return mlmodels_collection.find_one(query)['model_binary']
 
 
 def update_mlmodel(segment, game, model_type, model_bytes):
@@ -170,11 +168,9 @@ def update_mlmodel(segment, game, model_type, model_bytes):
     }
 
     query = {"segment": segment, "game": game, "model_type": model_type}
-    result = mlmodels_collection.update_one(query, update)
-    return result.modified_count
+    mlmodels_collection.update_one(query, update)
 
 
 def delete_mlmodel(segment, game, model_type):
     query = {"segment": segment, "game": game, "model_type": model_type}
-    result = mlmodels_collection.delete_one(query)
-    return result.deleted_count
+    mlmodels_collection.delete_one(query)
