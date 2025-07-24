@@ -14,7 +14,7 @@ class MLInput(BaseModel):
     data: List[float]
 
 class MLOutput(BaseModel):
-    prediction: int
+    prediction: float
 
 class RecommendRequest(BaseModel):
     user_id: str
