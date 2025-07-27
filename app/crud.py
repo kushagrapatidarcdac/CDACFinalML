@@ -1,121 +1,89 @@
-from bson import Binary
-from database import db
+from .database import db
 
 # ==== Database Collections ====
-datasets_collection = db['datasets']
+playerdatasets_collection = db['playerdatasets']
 incremental_collection = db['incrementaldatasets']
 mlmodels_collection = db['mlmodels']
 
 
-
-# ==== DATASETS CRUD ====
-
 '''
-datasets collection document structure:
+playerdatasets collection document structure:
 {   
-    "segment": "", # String
-    "game": "", # String
+    "segment": "",
+    "game": "",
     "data": {
-        "player_name": player_name, # List of String
-        "country": country, # List of String
-        "team": team, # List of String
+        "player_name": player_name, # String
+        "country": country, # String
+        "team": team, # String
         "total_rounds": total_rounds, # List of integers
         "kd": kd, # List of floats
         "rating": rating # List of floats
     }
 '''
 
-def create_dataset(segment, game, player_name, country, team, total_rounds, kd, rating):
-    doc = {
-        "segment": segment,
-        "game": game,
-        "data": {
-            "player_name": player_name,
-            "country": country,
-            "team": team,
-            "total_rounds": total_rounds,
-            "kd": kd,
-            "rating": rating
+class PlayerDataCrud:
+    def __init__(self, segment, game):
+        self.segment = segment
+        self.game = game
+    
+    # 1. Create (Insert) a document
+    def create_data(self, player_data):
+        doc = {
+            "segment": self.segment,
+            "game": self.game,
+            "data": {
+                "player_name": player_data['player_name'],
+                "country": player_data["country"],
+                "team": player_data["team"],
+                "total_rounds": player_data["total_rounds"],
+                "kd": player_data["kd"],
+                "rating": player_data["rating"]
+            }
         }
-    }
-    datasets_collection.insert_one(doc)
+        playerdatasets_collection.insert_one(doc)
+
+    # 2. Read (Find) documents by segment and game
+    def read_data(self):
+        query = {"segment": self.segment, "game": self.game}
+        doc = playerdatasets_collection.find_one(query)
+        return doc
+
+    # 3. Update - Add a new player in the data fields for a given segment and game
+    def update_data(self, new_data):
+        query = {"segment": self.segment, "game": self.game}
+        newvalues = {"$set": {
+            "data": {
+                "player_name": new_data["player_name"],
+                "country": new_data["country"],
+                "team": new_data["team"],
+                "total_rounds": new_data["total_rounds"],
+                "kd": new_data["kd"],
+                "rating": new_data["rating"]
+            }
+        }}
+        
+        playerdatasets_collection.update_one(query, newvalues)
+
+    # 4. Delete - Remove a document by segment and game
+    def delete_data(self):
+        delete_query = {"segment": self.segment, "game": self.game}
+        playerdatasets_collection.delete_one(delete_query)
 
 
-def read_datasets(segment=None, game=None):
-    query = {}
-    if segment:
-        query["segment"] = segment
-    if game:
-        query["game"] = game
-    return datasets_collection.find(query)
 
-
-def update_dataset(segment, game, new_data):
-    """
-    update_data should be a dict with keys for fields inside 'data', e.g.
-    {
-        "player_name": "new name",
-        "kd": 1.5,
-        ...
-    }
-    """
-    # Build $set for the nested 'data' field for each key in update_data
-    update = {
-        "$set": {"data": new_data}
-    }
-    query = {"segment": segment, "game": game}
-    datasets_collection.update_one(query, update)
-
-
-def delete_dataset(segment, game):
-    query = {"segment": segment, "game": game}
-    datasets_collection.delete_one(query)
-
-# ==== INCREMENTALDATASETS CRUD ====
+# ==== INCREMENTAL DATASETS CRUD ==== Under Development
 
 '''
-incremantaldatasets collection document structure:
-{
-    "segment": "", # String
-    "game": "", # String
+incrementaldatasets collection document structure:
+{   
+    "segment": "",
+    "game": "",
     "data": {
         "total_rounds": total_rounds, # List of integers
         "kd": kd, # List of floats
         "rating": rating # List of floats
     }
-}
 '''
-
-def upsert_incremental(segment, game, new_data):
-    query = {
-        "segment": segment,
-        "game": game
-    }
-    update = {
-        "$set": {
-            "data.total_rounds": new_data["total_rounds"],
-            "data.kd": new_data["kd"],
-            "data.rating": new_data["rating"],
-        }
-    }
-    incremental_collection.update_one(query, update, upsert=True)
-
-
-def read_incrementals(segment=None, game=None):
-    query = {}
-    if segment:
-        query["segment"] = segment
-    if game:
-        query["game"] = game
-    return incremental_collection.find(query)
-
-
-def reset_incremental(segment, game):
-    query = {"segment": segment, "game": game}
-    update = {"$set": {"data": {"total_rounds": [], "kd": [], "rating": []}}}
-    incremental_collection.update_one(query, update)
-
-
 
 
 # ==== ML MODELS CRUD ====
@@ -130,47 +98,52 @@ mlmodels collection document structure:
 }
 '''
 
+class ModelCrud:
+    def __init__(self, segment, game):
+        self.segment = segment
+        self.game = game
+        
 
-def create_mlmodel(segment, game, model_type, model_bytes):
-    """
-    model_bytes: raw bytes of your model binary (e.g. pickle, joblib, protobuf)
-    """
-    doc = {
-        "segment": segment,
-        "game": game,
-        "model_type": model_type,
-        "model_binary": Binary(model_bytes),
-    }
-    mlmodels_collection.insert_one(doc)
-
-
-def read_mlmodel(segment=None, game=None, model_type=None):
-    query = {}
-    if segment:
-        query["segment"] = segment
-    if game:
-        query["game"] = game
-    if model_type:
-        query["model_type"] = model_type
-    
-    return mlmodels_collection.find_one(query)['model_binary']
+    def create_mlmodel(self, model_type, model_bytes):
+        """
+        model_bytes: raw bytes of your model binary (e.g. pickle, joblib, protobuf)
+        """
+        doc = {
+            "segment": self.segment,
+            "game": self.game,
+            "model_type": model_type,
+            "model_binary": model_bytes,
+        }
+        mlmodels_collection.insert_one(doc)
 
 
-def update_mlmodel(segment, game, model_type, model_bytes):
-    """
-    model_bytes: raw bytes of your model binary (e.g. pickle, joblib, protobuf)
-    """
-    update_doc = {}
-    update_doc['model_binary'] = Binary(model_bytes)
-
-    update = {
-        "$set": update_doc
-    }
-
-    query = {"segment": segment, "game": game, "model_type": model_type}
-    mlmodels_collection.update_one(query, update)
+    def read_mlmodel(self, model_type=None):
+        query = {}
+        if self.segment:
+            query["segment"] = self.segment
+        if self.game:
+            query["game"] = self.game
+        if model_type:
+            query["model_type"] = model_type
+        
+        return mlmodels_collection.find_one(query)['model_binary']
 
 
-def delete_mlmodel(segment, game, model_type):
-    query = {"segment": segment, "game": game, "model_type": model_type}
-    mlmodels_collection.delete_one(query)
+    def update_mlmodel(self, model_type, model_bytes):
+        """
+        model_bytes: raw bytes of your model binary (e.g. pickle, joblib, protobuf)
+        """
+        update_doc = {}
+        update_doc['model_binary'] = model_bytes
+
+        update = {
+            "$set": update_doc
+        }
+
+        query = {"segment": self.segment, "game": self.game, "model_type": model_type}
+        mlmodels_collection.update_one(query, update)
+
+
+    def delete_mlmodel(self, model_type):
+        query = {"segment": self.segment, "game": self.game, "model_type": model_type}
+        mlmodels_collection.delete_one(query)

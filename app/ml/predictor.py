@@ -1,5 +1,5 @@
 import pickle
-from app.crud import read_mlmodel
+from app.crud import ModelCrud
 
 class Predictor:
     def __init__(self, segment, game, features):
@@ -9,11 +9,15 @@ class Predictor:
         self.pipeline = None
         self.model_binary = None
         self.prediction = None
-    
+        
+        # Make predictions while initialization
+        self.predict_rating()
+        
     def get_model(self):
         # Use Segment and Game and model_type = 'prediction' to fetch the model from the database
         # Set self.model_bytes to the fetched model
-        self.model_binary=read_mlmodel(segment=self.segment, game=self.game, model_type="prediction")
+        MC=ModelCrud(self.segment, self.game)
+        self.model_binary=MC.read_mlmodel(model_type="prediction")
         
     
     def load_model(self):
@@ -22,11 +26,8 @@ class Predictor:
 
     def make_predictions(self):
         self.load_model()
-        self.prediction = self.pipeline.predict([[self.features['total_rounds'], self.features['kd']]])
-    
-def predict_rating(segment, game, features):
-    predict = Predictor(segment=segment, game=game, features=features)
-    predict.load_model()
-    predict.make_predictions()
-    
-    return predict.prediction[0]
+        self.prediction = {'rating': self.pipeline.predict([[self.features['total_rounds'], self.features['kd']]])}
+        
+    def predict_rating(self):
+        self.load_model()
+        self.make_predictions()

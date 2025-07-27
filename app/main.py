@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routes import ml_routes
+from .routes import recommender, predictor, increment_prediction
 from .database import connect_to_mongo, close_mongo_connection
 from .config import settings
 
@@ -11,8 +11,17 @@ app = FastAPI(
     description=settings.APP_DESCRIPTION,
 )
 
-# Include machine learning related routes
-app.include_router(ml_routes.router, prefix="/ml", tags=["ML Operations"])
+
+
+@app.get("/")
+async def read_home():
+    return {"Routes Available": [predictor.router.prefix, recommender.router.prefix],
+            "Under Development": [increment_prediction.router.prefix]}
+
+# Machine Learning related routes
+app.include_router(recommender.router)
+app.include_router(predictor.router)
+# app.include_router(increment_prediction.router)
 
 
 # Connect to MongoDB when app starts

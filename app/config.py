@@ -2,24 +2,23 @@ import os
 from dotenv import load_dotenv
 
 class Settings():
+    # Database Configurations
     MONGO_URI: str
-    MONGO_DB: str = "mydatabase"
+    MONGO_DB: str
     
+    # Application Configurations
     APP_NAME: str 
     APP_DESCRIPTION: str
-
-# Load variables from the .env file (must be called at the start)
-load_dotenv()
+    
+    def __init__(self):
+        load_dotenv()
+        self.MONGO_URI = os.getenv("MONGO_URI")
+        self.MONGO_DB = os.getenv("MONGO_DB", "mydatabase")
+        self.APP_NAME = os.getenv("APP_NAME")
+        self.APP_DESCRIPTION = os.getenv("APP_DESCRIPTION")
 
 settings = Settings()
 
-
-# Access environment variables
-settings.MONGO_URI = os.getenv("MONGO_URI")
-settings.MONGO_DB = os.getenv("MONGO_DB", "mydatabase")
-
-settings.APP_NAME = os.getenv("APP_NAME")
-settings.APP_DESCRIPTION = os.getenv("APP_DESCRIPTION")
 
 if __name__ == "__main__":
     print("Configuration settings:")
