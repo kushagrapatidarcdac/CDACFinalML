@@ -13,12 +13,12 @@ mlmodels_collection = db['mlmodels']
 '''
 datasets collection document structure:
 {   
-    "segment": "",
-    "game": "",
+    "segment": "", # String
+    "game": "", # String
     "data": {
-        "player_name": player_name, # String
-        "country": country, # String
-        "team": team, # String
+        "player_name": player_name, # List of String
+        "country": country, # List of String
+        "team": team, # List of String
         "total_rounds": total_rounds, # List of integers
         "kd": kd, # List of floats
         "rating": rating # List of floats

@@ -2,26 +2,30 @@ import pickle
 import pandas as pd
 from crud import read_mlmodel
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Dict, List
 from sklearn.pipeline import Pipeline
 
-class Dataset(BaseModel):
-    id: str
-    features: List[float]
-    label: Optional[int]
 
-class MLInput(BaseModel):
-    data: List[float]
+# TrainMLInput is used for training requests
+class TrainMLInput(BaseModel):
+    segemnt: str
+    game: str
+    data: Dict[str,]
 
-class MLOutput(BaseModel):
+# PredictMLInput and PredictMLOutput are used for prediction requests
+class PredictMLInput(BaseModel):
+    segment: str
+    game: str
+    features: Dict[str, float]
+
+class PredictMLOutput(BaseModel):
     prediction: float
 
 class RecommendRequest(BaseModel):
-    user_id: str
-    top_k: int = 10
+    pass
 
 class RecommendResponse(BaseModel):
-    recommendations: List[str]
+    pass
 
 class Model:
     def __init__(self,segment, game, model_type,new_data):
