@@ -26,7 +26,8 @@ class Predictor:
 
     def make_predictions(self):
         self.load_model()
-        self.prediction = {'rating': self.pipeline.predict([[self.features['total_rounds'], self.features['kd']]])}
+        rating = round(float(self.pipeline.predict([[self.features['total_rounds'], self.features['kd']]])[0]),2)
+        self.prediction = {'rating': rating}
         
     def predict_rating(self):
         self.load_model()
