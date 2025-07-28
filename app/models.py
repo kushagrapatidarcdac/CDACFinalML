@@ -6,17 +6,12 @@ from typing import Dict
 from sklearn.pipeline import Pipeline
 
 
-# TrainMLInput is used for training requests
-class TrainMLInput(BaseModel):
-    segemnt: str
-    game: str
-    data: Dict[str,]
-
 # PredictMLInput is used for prediction
 class PredictMLInput(BaseModel):
     segment: str
     game: str
-    features: Dict[str, float]
+    total_rounds: int
+    kd: float
 
 # RecommendMLInput is used for recommendation
 class RecommendMLInput(BaseModel):
@@ -25,6 +20,16 @@ class RecommendMLInput(BaseModel):
     player_name: str
     k: int
 
+# IncrementalMLInput is used for incremental learning
+class IncrementalMLInput(BaseModel):
+    segement: str
+    game: str
+    player_name: str
+    country: str
+    team: str
+    total_rounds: int
+    kd: float
+    rating: float
 
 # ML Model
 class Model:

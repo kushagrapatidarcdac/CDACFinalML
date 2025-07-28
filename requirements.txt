@@ -5,6 +5,6 @@ uvicorn
 fastapi
 pydantic
 pydantic_settings
-motor
+pymongo
 python-dotenv
 pickle

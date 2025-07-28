@@ -9,8 +9,15 @@ router = APIRouter(prefix="/predictor", tags=["predictor"])
 # Get Predictions
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def make_predictions(player: models.PredictMLInput):
-    player=player.model_dump()
-    features={'total_rounds': player['total_rounds'], 'kd': player['kd']}
-    predictor= await prdctr.Predictor(player.segment, player.game, features)
+    
+    features={'total_rounds': player.total_rounds, 'kd': player.kd}
+    predictor= prdctr.Predictor(player.segment, player.game, features)
     
     return predictor.prediction
+    
+    # Test Output Data
+    # return player.model_dump()
+    # print(predictor.prediction)
+    # return {'rating': "Hello"}
+
+    
