@@ -6,5 +6,5 @@ fastapi
 pydantic
 pydantic_settings
 pymongo
+pickle5
 python-dotenv
-pickle
