@@ -1,5 +1,4 @@
 from .database import db
-
 # ==== Database Collections ====
 playerdatasets_collection = db['playerdatasets']
 incremental_collection = db['incrementaldatasets']
@@ -84,7 +83,55 @@ incrementaldatasets collection document structure:
         "rating": rating # List of floats
     }
 '''
+class IncrementalDataCrud:
+    def __init__(self, segment, game):
+        self.segment = segment
+        self.game = game
+    
+    # 1. Create (Insert) a document
+    def create_data(self, player_data):
+        doc = {
+            "segment": self.segment,
+            "game": self.game,
+            "data": {
+                "total_rounds": player_data["total_rounds"],
+                "kd": player_data["kd"],
+                "rating": player_data["rating"]
+            }
+        }
+        incremental_collection.insert_one(doc)
 
+    # 2. Read (Find) documents by segment and game
+    def read_data(self):
+        query = {"segment": self.segment, "game": self.game}
+        doc = incremental_collection.find_one(query)
+        return doc
+
+    # 3. Update - Add a new player features and target in the data fields for a given segment and game
+    def update_data(self, new_data):
+        query = {"segment": self.segment, "game": self.game}
+        newvalues = {"$set": {
+            "data": {
+                "total_rounds": new_data["total_rounds"],
+                "kd": new_data["kd"],
+                "rating": new_data["rating"]
+            }
+        }}
+        
+        incremental_collection.update_one(query, newvalues)
+
+    # 4. Delete - Remove a document by segment and game
+    def delete_data(self):
+        delete_query = {"segment": self.segment, "game": self.game}
+        incremental_collection.delete_one(delete_query)
+        
+    # 5. Reset - Remove the data from the document for a given segment and game
+    def reset_data(self):
+        query = {"segment": self.segment, "game": self.game}
+        newvalues = {"$set": {
+            "data": {}
+            }}
+        incremental_collection.update_one(query, newvalues)
 
 # ==== ML MODELS CRUD ====
 

@@ -2,7 +2,6 @@ import pickle
 import pandas as pd
 from app.crud import ModelCrud
 from pydantic import BaseModel
-from typing import Dict
 from sklearn.pipeline import Pipeline
 
 
@@ -22,7 +21,7 @@ class RecommendMLInput(BaseModel):
 
 # IncrementalMLInput is used for incremental learning
 class IncrementalMLInput(BaseModel):
-    segement: str
+    segment: str
     game: str
     player_name: str
     country: str
@@ -51,7 +50,7 @@ class Model:
 
     # Prepare data for partial_fit
     def predData(self):
-        df = pd.DataFrame(self.new_data)
+        df = pd.DataFrame.from_dict(self.new_data, orient='columns')
         self.X = df[["total_rounds", "kd"]].values
         self.y = df["rating"].values
 
@@ -66,10 +65,7 @@ class Model:
             regressor = self.mlmodel.named_steps['regressor']
 
             # Scale features
-            X_scaled = scaler.transform(self.X) if hasattr(scaler, "transform") else self.X
+            X_scaled = scaler.transform(self.X)
             # partial_fit with unscaled is normally required, so we will call partial_fit on regressor with scaled X
             # SGDRegressor supports partial_fit for regression natively.
             regressor.partial_fit(X_scaled, self.y)
-        else:
-            # If model isn't a pipeline, fallback to just partial_fit on model
-            self.mlmodel.partial_fit(self.X, self.y)
