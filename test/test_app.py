@@ -31,8 +31,9 @@ with tabs[0]:
         }
         try:
             resp = requests.post(PREDICTOR_URL, json=payload, headers=headers)
-            st.write("Status code:", resp.status_code)
-            st.json(resp.json())
+            st.text_area("Predicted Rating:", resp.json()['rating'])
+            # st.write("Status code:", resp.status_code)
+            # st.json(resp.json())
         except Exception as e:
             st.error(str(e))
 
@@ -53,8 +54,11 @@ with tabs[1]:
         }
         try:
             resp = requests.post(RECOMMENDER_URL, json=payload, headers=headers)
-            st.write("Status code:", resp.status_code)
-            st.json(resp.json())
+            for _ in range(len(resp.json()['player_name'])):
+                st.text_area(f"Recommended Player {_}:", resp.json()['player_name'][_])
+            
+            # st.write("Status code:", resp.status_code)
+            # st.json(resp.json())
         except Exception as e:
             st.error(str(e))
 
