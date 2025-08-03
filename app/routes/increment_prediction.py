@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status
 from app import models
+from app.ml.incremental_prediction_trainer import process_new_data as pnd
 from pprint import pprint
 
 router = APIRouter(prefix="/incrementpredictor", tags=["incrementpredictor"])
@@ -20,6 +21,8 @@ async def create_order(newdata: models.IncrementalMLInput):
         "rating": newdata.rating
         
     }
+    
+    # pnd(segment, game, data)
     
     payload={
         "segment": segment,
