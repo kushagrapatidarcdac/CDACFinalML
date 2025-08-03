@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from app import models
-from app.ml.incremental_prediction_trainer import process_new_data as pnd
+from pprint import pprint
 
 router = APIRouter(prefix="/incrementpredictor", tags=["incrementpredictor"])
 
@@ -21,6 +21,11 @@ async def create_order(newdata: models.IncrementalMLInput):
         
     }
     
-    pnd(segment, game, data)
+    payload={
+        "segment": segment,
+        "game": game,
+        "data": data
+    }
+    pprint(payload)
     
-    return {"Not Available": "Route Under Development"}
+    return {"status": "Not Available...\nRoute Under Development"}
