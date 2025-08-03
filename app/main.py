@@ -38,4 +38,4 @@ async def read_home():
 # Machine Learning related routes
 app.include_router(predictor.router)
 app.include_router(recommender.router)
-# app.include_router(increment_prediction.router)
+app.include_router(increment_prediction.router)
