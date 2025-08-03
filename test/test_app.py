@@ -3,14 +3,14 @@ import requests
 
 # Set your endpoints
 # Live Server URL
-# PREDICTOR_URL = "https://cdacfinalml.onrender.com/predictor/"
-# RECOMMENDER_URL = "https://cdacfinalml.onrender.com/recommender/"
-# INCREMENTPRED_URL = "https://cdacfinalml.onrender.com/incrementpredictor/"
+PREDICTOR_URL = "https://cdacfinalml.onrender.com/predictor/"
+RECOMMENDER_URL = "https://cdacfinalml.onrender.com/recommender/"
+INCREMENTPRED_URL = "https://cdacfinalml.onrender.com/incrementpredictor/"
 
 # Local Machine URL
-PREDICTOR_URL = "http://localhost:8000/predictor/"
-RECOMMENDER_URL = "http://localhost:8000/recommender/"
-INCREMENTPRED_URL = "http://localhost:8000/incrementpredictor/"
+# PREDICTOR_URL = "http://localhost:8000/predictor/"
+# RECOMMENDER_URL = "http://localhost:8000/recommender/"
+# INCREMENTPRED_URL = "http://localhost:8000/incrementpredictor/"
 
 headers = {
     "Content-Type": "application/json"
